@@ -4,6 +4,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <title>Server date/time</title>
+  <link rel="stylesheet" href="maine.css">
 </head>
 
 <body>
@@ -14,6 +15,15 @@
   <div id="departures"></div>
   <div id="info4"></div>
   <div id="info5"></div>
+<div>Do you have any notes? <input type="text" id="name"/> <a href="#" onclick="createFunction(true)">Add note</a> </div>  
+<div id="datadiv"></div>
+<div> Add the mood of someone you had contact today: <input type="text" id="nome"/> <a href="#" onclick="createFunction2(true)">Is salty</a> <a href="#" onclick="createFunction2(false)">Is not salty</a> </div>
+  <div id="datadiv2"></div> 
+
+ 
+  
+
+  
 
   <script language="javascript">
 
@@ -24,6 +34,8 @@
     const info4 = document.getElementById('info4');
     const info5 = document.getElementById('info5');
      
+     const url7 = 'https://5cd130c2d4a78300147be5aa.mockapi.io/feelz';
+     const url6 = 'https://5cd130c2d4a78300147be5aa.mockapi.io/rates';
      const url5 = 'https://cors-anywhere.herokuapp.com/https://api.kanye.rest/';
      const url4 = 'https://cors-anywhere.herokuapp.com/https://newsapi.org/v2/top-headlines?sources=bbc-news&apiKey=5050fc536a934d6ba532b7662c49fb01';
      const url3 = 'https://cors-anywhere.herokuapp.com/http://api.sl.se/api2/realtimedeparturesV4.json?key=ca230aef922344bfaa6366215c3903be&siteid=9192&timewindow=10';
@@ -32,11 +44,196 @@
      const url = 'https://cors-anywhere.herokuapp.com/http://worldtimeapi.org/api/timezone/Europe/Stockholm';
 
 
+ loadData();
+loadData2();
+ 
+
+
+    function loadData2() {
+      const datadiv2 = document.getElementById('datadiv2');
+      datadiv2.innerHTML = '';
+      fetch(url7)
+        .then((resp) => resp.json())
+        .then(function (datas2) {
+          return datas2.map(function (data7) {
+            let divtag7 = document.createElement('div');
+
+            
+            divtag7.innerHTML = `${data7.id} - ${data7.nome} - ${data7.isHome==true?"Is salty today":"Is not salty today"} <a href="#" onclick="changeFunction2(true, ${data7.id})">Salty</a> <a href="#" onclick="changeFunction2(false, ${data7.id})">Not salty</a> <a href="#" onclick="deleteFunction2(${data7.id})">Delete</a>`;
+            datadiv2.appendChild(divtag7);
+          })
+        });
+    }
+
+
+    function createFunction2(isHomeNow) {
+      const textInput2 = document.getElementById('nome').value;
+      var data7 = { nome: textInput2, isHome: isHomeNow }
+
+      fetch(url7,
+        {
+        
+          method: "POST", 
+          mode: "cors", 
+          cache: "no-cache", 
+          credentials: "same-origin", 
+
+          headers:
+          {
+            'Accept': 'application/json, text/plain, */*',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data7)
+        }).then(res => res.json())
+        .then(res => console.log(res))
+      setTimeout(() => {
+        loadData2();
+      }, 1000);
+    }
+
+
+
+  
+    function changeFunction2(isHomeNow, id) {
+      var data7 = {isHome: isHomeNow }
+
+      fetch(url7 + "/" + id,
+        {
+          method: "PUT", 
+          mode: "cors", 
+          cache: "no-cache", 
+          credentials: "same-origin", 
+
+          headers:
+          {
+            'Accept': 'application/json, text/plain, */*',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data7)
+        }).then(res => res.json())
+        .then(res => console.log(res))
+
+      setTimeout(() => {
+        loadData2();
+      }, 500);
+
+    }
+
+
+
+
+    
+
+    function deleteFunction2(id) {
+
+      
+
+      fetch(url7 + "/" + id,
+        {
+         
+          method: "DELETE", 
+          mode: "cors", 
+          cache: "no-cache", 
+          credentials: "same-origin",  
+
+          headers:
+          {
+            'Accept': 'application/json, text/plain, */*',
+            'Content-Type': 'application/json'
+          },
+          
+        }).then(res => res.json())
+        .then(res => console.log(res))
+
+    
+      setTimeout(() => {
+        loadData2();
+      }, 500);
+
+    }
+
+
+
+    function loadData() {
+      const datadiv = document.getElementById('datadiv');
+      datadiv.innerHTML = '';
+      fetch(url6)
+        .then((resp) => resp.json())
+        .then(function (datas) {
+          return datas.map(function (data) {
+            let divtag = document.createElement('div');
+
+            
+            divtag.innerHTML = `${data.id} - ${data.name}  <a href="#" onclick="deleteFunction(${data.id})">Done</a>`;
+            datadiv.appendChild(divtag);
+          })
+        });
+    }
+
+
+function createFunction() {
+      const textInput = document.getElementById('name').value;
+      var data = { name: textInput}
+
+      fetch(url6,
+        {
+          
+          method: "POST", 
+          mode: "cors", 
+          cache: "no-cache", 
+          credentials: "same-origin", 
+
+          headers:
+          {
+            'Accept': 'application/json, text/plain, */*',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(data)
+        }).then(res => res.json())
+        .then(res => console.log(res))
+        
+      setTimeout(() => {
+        loadData();
+      }, 1000);
+    }
+
+ function deleteFunction(id) {
+
+      
+
+      fetch(url6 + "/" + id,
+        {
+          
+          method: "DELETE",
+          mode: "cors", 
+          cache: "no-cache", 
+          credentials: "same-origin", 
+
+          headers:
+          {
+            'Accept': 'application/json, text/plain, */*',
+            'Content-Type': 'application/json'
+          },
+          
+        }).then(res => res.json())
+        .then(res => console.log(res))
+
+   
+      setTimeout(() => {
+        loadData();
+      }, 500);
+
+    }
+
+
+
+
+
 fetch(url5)
       .then((resp) => resp.json())
       .then(function (data5)
     {
-      info.innerHTML += `${"The random Kanye West quote is: " + data5.quote} <br>`;
+      info5.innerHTML += `${"The random Kanye West quote is: " + data5.quote} <br>`;
         
        
     })
@@ -47,11 +244,11 @@ fetch(url4)
       .then((resp) => resp.json())
       .then(function (data4)
     {
-        info.innerHTML += `${data4.articles[0].author} <br>`;
-        info.innerHTML += `${data4.articles[0].title} <br>`;
-        info.innerHTML += `${data4.articles[0].description} <br>`;
-        info.innerHTML += `${data4.articles[0].content} <br>`;
-        info.innerHTML += `${"If you want to read the full article: " + data4.articles[0].url} <br>`;
+        info4.innerHTML += `${data4.articles[0].author} <br>`;
+        info4.innerHTML += `${data4.articles[0].title} <br>`;
+        info4.innerHTML += `${data4.articles[0].description} <br>`;
+        info4.innerHTML += `${data4.articles[0].content} <br>`;
+        info4.innerHTML += `${"If you want to read the full article: " + data4.articles[0].url} <br>`;
     })
 
 
@@ -72,6 +269,8 @@ fetch(url4)
             {
                 for(var i = 0; i < departure.Deviations.length; i++) 
                 {
+                  
+
                     var obj = departure.Deviations[i];
                     devtext += obj.Text;
                 }
@@ -90,9 +289,9 @@ fetch(url2)
       .then((resp) => resp.json())
       .then(function (data2)
     {
-        info.innerHTML += `${"1SEK is: " + data2.rates.BRL + " BRL"} <br>`;
-        info.innerHTML += `${"1SEK is: " + data2.rates.USD + " USD"} <br>`;
-        info.innerHTML += `${"1SEK is: " + data2.rates.EUR + " EUR"} <br>`;
+        info2.innerHTML += `${"1SEK is: " + data2.rates.BRL + " BRL"} <br>`;
+        info2.innerHTML += `${"1SEK is: " + data2.rates.USD + " USD"} <br>`;
+        info2.innerHTML += `${"1SEK is: " + data2.rates.EUR + " EUR"} <br>`;
     }) 
 
 
@@ -101,7 +300,7 @@ fetch(url1)
       .then((resp) => resp.json())
       .then(function (data1)
       { 
-      info.innerHTML += `${data1.location.name + " is " + data1.current.condition.text} <br>`;
+      info1.innerHTML += `${data1.location.name + " is " + data1.current.condition.text} <br>`;
       })    
 
 
@@ -114,7 +313,7 @@ fetch(url1)
        
        
     })
-    
+   
   
 
 </script>
